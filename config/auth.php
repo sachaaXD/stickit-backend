@@ -20,11 +20,13 @@ function get_user_from_token($conn)
     $token = get_bearer_token();
 
     if (!$token) {
+        http_response_code(401);
+
         echo json_encode([
-            'status' => 'error',
-            'message' => 'Token required'
-        ]);
-        exit;
+        'status' => 'error',
+        'message' => 'Token required'
+    ]);
+    exit;
     }
 
     $stmt = $conn->prepare("

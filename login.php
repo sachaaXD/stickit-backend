@@ -34,28 +34,28 @@ $stmt = $conn->prepare("
 
 $stmt->bind_param("s", $name);
 $stmt->execute();
-$result = $stmt->get_result();
 
+$result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-if (!$user || !password_verify($raw_password, $user['password'])) {
+$stmt->close();
+
+if (!$user || $raw_password !== $user['password']) {
 
     http_response_code(401);
+
     echo json_encode([
         'status' => 'error',
         'message' => 'Invalid credentials'
     ]);
 
-    $stmt->close();
     $conn->close();
     exit;
 }
 
-$stmt->close();
-
-// generate secure token
 $token = bin2hex(random_bytes(32));
 
+// simpan token
 $update = $conn->prepare("
     UPDATE users
     SET token = ?
@@ -75,3 +75,4 @@ echo json_encode([
 ]);
 
 $conn->close();
+

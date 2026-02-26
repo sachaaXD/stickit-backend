@@ -25,7 +25,6 @@ if ($name === '' || $raw_password === '') {
     exit;
 }
 
-// username validation
 if (!preg_match('/^[a-z0-9_]{3,20}$/', $name)) {
     http_response_code(400);
     echo json_encode([
@@ -35,7 +34,6 @@ if (!preg_match('/^[a-z0-9_]{3,20}$/', $name)) {
     exit;
 }
 
-// password validation
 if (strlen($raw_password) < 6) {
     http_response_code(400);
     echo json_encode([
@@ -47,7 +45,6 @@ if (strlen($raw_password) < 6) {
 
 $role = 'user';
 
-// check duplicate
 $check = $conn->prepare("
     SELECT id
     FROM users
@@ -69,10 +66,8 @@ if ($exists) {
     exit;
 }
 
-// hash password
-$password = password_hash($raw_password, PASSWORD_DEFAULT);
+$password = $raw_password;
 
-// insert
 $stmt = $conn->prepare("
     INSERT INTO users (name, password, role)
     VALUES (?, ?, ?)
